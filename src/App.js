@@ -1,26 +1,51 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Suspense } from 'react';
+//import './App.css';
+
+import MiniDrawer from './MiniDrawer.js'
+import { BrowserRouter as Router } from "react-router-dom";
+
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux'
+import logger from 'redux-logger'
+
+import reducers from './reducers/index'
+
+
+const store = createStore(
+  reducers,
+  applyMiddleware(logger)
+  )
 
 class App extends Component {
+
+  constructor(props){
+    super(props)
+
+    this.state = {
+      sideBarStatus: false
+    };
+
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+
+  handleClick(){
+    this.setState({
+      sideBarStatus:!this.state.sideBarStatus
+    })
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <Router basename={'/react'}>
+            <Suspense fallback={<div>Loading...</div>}>
+              <MiniDrawer />
+            </Suspense>
+          </Router>
+        </div>
+      </Provider>
     );
   }
 }
